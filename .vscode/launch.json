@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net7.0/Blackjack.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "PowerShell Script",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${file}",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
