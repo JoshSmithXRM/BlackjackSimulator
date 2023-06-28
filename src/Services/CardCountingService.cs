@@ -1,8 +1,8 @@
-namespace Blackjack.Helpers
+namespace Blackjack.Services
 {
-    public static class CardCountingHelper
+    public class CardCountingService : ICardCountingService
     {
-        public static CountType GetCountType(int runningCount)
+        public CountType GetCountType(int runningCount)
         {
             if (runningCount >= 1)
             {
@@ -18,7 +18,7 @@ namespace Blackjack.Helpers
             }
         }
 
-        public static string GetRecommendation(int runningCount, Hand playerHand, ICard dealerFirstCard)
+        public string GetRecommendation(int runningCount, Hand playerHand, ICard dealerFirstCard)
         {
             CountType countType = GetCountType(runningCount);
 

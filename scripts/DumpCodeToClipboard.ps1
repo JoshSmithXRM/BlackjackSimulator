@@ -1,4 +1,4 @@
-$excludedFiles = @(".NETCoreApp,Version=v7.0.AssemblyAttributes.cs", "Blackjack.AssemblyInfo.cs", "Blackjack.GlobalUsings.g.cs")
+$excludedFiles = @(".NETCoreApp,Version=v7.0.AssemblyAttributes.cs", "Blackjack.AssemblyInfo.cs", "Blackjack.GlobalUsings.g.cs", "GameService.cs")
 
 $codeFiles = Get-ChildItem -Recurse -Filter *.cs | Where-Object { $_.Name -notin $excludedFiles }
 $codeString = ""

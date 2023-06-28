@@ -10,4 +10,3 @@ global using Blackjack.Interfaces;
 global using Blackjack.Models;
 global using Blackjack.Services;
 global using Microsoft.Extensions.DependencyInjection;
-global using Blackjack.Helpers;

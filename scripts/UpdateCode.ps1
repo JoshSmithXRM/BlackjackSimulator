@@ -8,7 +8,6 @@ $codeFiles = @{
     "D:\VS\Personal\Blackjack\src\Enums\PlayerAction.cs" = "PlayerAction.cs"
     "D:\VS\Personal\Blackjack\src\Enums\Rank.cs" = "Rank.cs"
     "D:\VS\Personal\Blackjack\src\Enums\Suit.cs" = "Suit.cs"
-    "D:\VS\Personal\Blackjack\src\Helpers\CardCountingHelper.cs" = "CardCountingHelper.cs"
     "D:\VS\Personal\Blackjack\src\Interfaces\ICard.cs" = "ICard.cs"
     "D:\VS\Personal\Blackjack\src\Interfaces\IHand.cs" = "IHand.cs"
     "D:\VS\Personal\Blackjack\src\Interfaces\IRankable.cs" = "IRankable.cs"
