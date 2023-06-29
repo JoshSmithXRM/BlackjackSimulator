@@ -4,13 +4,19 @@ namespace Blackjack.Models
 {
     public interface IHand
     {
-        public IReadOnlyList<ICard> Cards { get; }
-        public void AddCard(ICard card);
-        public int GetTotal();
-        public bool IsBust { get; }
-        public bool IsBlackjack { get; }
-        public bool CanDoubleDown { get; }
-        public string PartialString(bool hideSecondCard);
-        public void Clear();
+        IReadOnlyList<ICard> Cards { get; }
+        void AddCard(ICard card);
+        int GetTotal();
+        bool IsBust { get; }
+        bool IsBlackjack { get; }
+        bool CanDoubleDown { get; }
+        bool CanSplit { get; }
+        bool IsSoft { get; }
+        decimal BetAmount { get; set; }
+        string PartialString(bool hideSecondCard = false);
+        void Clear();
+        ICard GetUpCard();
+        IHand Split();
+        List<PlayerAction> ActionsTaken { get; }
     }
 }

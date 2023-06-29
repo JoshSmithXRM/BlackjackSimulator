@@ -30,15 +30,20 @@ namespace Blackjack.Models
 
         public bool IsBlackjack => cards.Count == 2 && GetTotal() == 21;
 
+        public bool IsSoft => cards.Any(card => card.Rank == Rank.Ace) && GetTotal() <= 21;
+
         public bool CanDoubleDown => cards.Count == 2;
 
         public bool CanSplit => cards.Count == 2 && cards[0].Rank == cards[1].Rank;
 
-        public decimal BetAmount { get; internal set; }
+        public decimal BetAmount { get; set; }
+
+        public List<PlayerAction> ActionsTaken { get; }
 
         public Hand(decimal betAmount = 0)
         {
             BetAmount = betAmount;
+            ActionsTaken = new List<PlayerAction>();
         }
 
         public override string ToString()
@@ -61,7 +66,7 @@ namespace Blackjack.Models
             }
             else if (cards.Count == 1)
             {
-                return $"{cards.First()},";
+                return $"{cards.First()}";
             }
             else
             {
@@ -74,9 +79,17 @@ namespace Blackjack.Models
             cards.Clear();
         }
 
-        internal ICard GetUpcard()
+        public ICard GetUpCard()
         {
-            throw new NotImplementedException();
+            return cards.First();
+        }
+
+        public IHand Split()
+        {
+            var splitHand = new Hand(BetAmount);
+            splitHand.AddCard(cards[1]);
+            cards.RemoveAt(1);
+            return splitHand;
         }
     }
 }

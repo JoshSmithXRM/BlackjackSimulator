@@ -2,7 +2,7 @@ namespace Blackjack.Services
 {
     public class SimpleHandEvaluator : IHandEvaluator
     {
-        public HandResult EvaluateHand(Hand playerHand, Hand dealerHand, int runningCount, CountType countType, List<PlayerAction> playerActionsTaken)
+        public HandResult EvaluateHand(IHand playerHand, IHand dealerHand)
         {
             bool playerWins = !playerHand.IsBust && (dealerHand.IsBust || playerHand.GetTotal() > dealerHand.GetTotal());
             bool tie = !playerHand.IsBust && playerHand.GetTotal() == dealerHand.GetTotal();
@@ -31,7 +31,7 @@ namespace Blackjack.Services
                 netAmountWonLost = -playerHand.BetAmount;
             }
 
-            return new HandResult(outcome, playerHand.Cards, dealerHand.Cards, playerHand.BetAmount, netAmountWonLost, runningCount, countType, playerActionsTaken);
+            return new HandResult(outcome, playerHand, dealerHand, playerHand.BetAmount, netAmountWonLost);
         }
     }
 }

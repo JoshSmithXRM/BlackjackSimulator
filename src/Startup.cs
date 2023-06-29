@@ -16,9 +16,7 @@ namespace Blackjack
                 .AddTransient<IGameOutputService, ConsoleGameOutputService>()
                 .AddTransient<IGameInputService, ConsoleGameInputService>()
                 .AddTransient<IGameDialogService, ConsoleGameDialogService>()
-                .AddTransient<IResultStorageService, ResultStorageService>()
                 .AddTransient<IHandEvaluator, SimpleHandEvaluator>()
-                .AddTransient<RoundManager>()
                 .AddTransient<GameService>();
         }
     }

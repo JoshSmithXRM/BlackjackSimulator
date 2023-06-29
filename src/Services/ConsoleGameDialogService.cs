@@ -48,7 +48,7 @@ namespace Blackjack.Services
             }
         }
 
-        public decimal GetWagerAmount()
+        public decimal GetBetAmount()
         {
             while (true)
             {
@@ -62,6 +62,40 @@ namespace Blackjack.Services
 
                 _outputService.WriteLine("Invalid input. Please try again.");
             }
+        }
+
+        public bool PlayAnotherRound()
+        {
+            while (true)
+            {
+                _outputService.WriteLine();
+                _outputService.WriteLine("Play another round? (Y/N)");
+                string input = _inputService.ReadInput();
+
+                if (input.Equals("Y", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                if (input.Equals("N", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+
+                _outputService.WriteLine("Invalid input. Please try again.");
+            }
+        }
+
+        public void PlayerBust()
+        {
+            _outputService.WriteLine("Bust! Press any key to continue.");
+            _inputService.ReadInput();
+        }
+
+        public void PlayerBlackjack()
+        {
+            _outputService.WriteLine("Blackjack! Press any key to continue.");
+            _inputService.ReadInput();
         }
     }
 }

@@ -4,6 +4,9 @@ namespace Blackjack.Services
     {
         PlayerAction GetPlayerAction(List<PlayerAction> availableActions);
         int GetNumberOfHands();
-        decimal GetWagerAmount();
+        decimal GetBetAmount();
+        bool PlayAnotherRound();
+        void PlayerBust();
+        void PlayerBlackjack();
     }
 }

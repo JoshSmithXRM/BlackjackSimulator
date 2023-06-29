@@ -19,9 +19,24 @@ namespace Blackjack.Services
             return _gameDialogService.GetPlayerAction(availableActions);
         }
 
-        public decimal GetWagerAmount()
+        public decimal GetBetAmount()
         {
-            return _gameDialogService.GetWagerAmount();
+            return _gameDialogService.GetBetAmount();
+        }
+
+        public bool PlayAnotherRound()
+        {
+            return _gameDialogService.PlayAnotherRound();
+        }
+
+        public void PlayerBust()
+        {
+            _gameDialogService.PlayerBust();
+        }
+
+        public void PlayerBlackjack()
+        {
+            _gameDialogService.PlayerBlackjack();
         }
     }
 }

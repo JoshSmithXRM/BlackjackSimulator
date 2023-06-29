@@ -3,8 +3,8 @@ namespace Blackjack.Models
     public class HandResult
     {
         public HandOutcome Outcome { get; }
-        public IReadOnlyList<ICard> PlayerCards { get; }
-        public IReadOnlyList<ICard> DealerCards { get; }
+        public IHand PlayerHand { get; }
+        public IHand DealerHand { get; }
         public decimal BetAmount { get; }
         public decimal NetAmountWonLost { get; }
         public decimal TotalAmount => BetAmount + NetAmountWonLost;
@@ -12,16 +12,14 @@ namespace Blackjack.Models
         public CountType CountType { get; }
         public List<PlayerAction> PlayerActions { get; }
 
-        public HandResult(HandOutcome outcome, IReadOnlyList<ICard> playerCards, IReadOnlyList<ICard> dealerCards, decimal betAmount, decimal netAmountWonLost, int runningCount, CountType countType, List<PlayerAction> playerActions)
+        public HandResult(HandOutcome outcome, IHand playerHand, IHand dealerHand, decimal betAmount, decimal netAmountWonLost)
         {
             Outcome = outcome;
-            PlayerCards = playerCards;
-            DealerCards = dealerCards;
+            PlayerHand = playerHand;
+            DealerHand = dealerHand;
             BetAmount = betAmount;
             NetAmountWonLost = netAmountWonLost;
-            RunningCount = runningCount;
-            CountType = countType;
-            PlayerActions = playerActions;
+            PlayerActions = playerHand.ActionsTaken;
         }
     }
 }
