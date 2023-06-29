@@ -2,13 +2,21 @@ namespace Blackjack
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
-            int deckCount = 8;
-
             var serviceCollection = new ServiceCollection();
-            var startup = new Startup();
-            startup.ConfigureServices(serviceCollection, deckCount);
+            var config = new GameConfiguration
+            {
+                DecksInShoe = 6,
+                MinimumBet = 5,
+                MaximumBet = 500,
+                PenetrationRateRange = (0.5, 0.75),
+                Strategy = Strategy.Basic,
+                CountingSystem = CountingSystem.HiLo,
+                InsuranceOption = false,
+                DealerHitsOnSoft17 = true,
+            };
+            Startup.ConfigureServices(serviceCollection, config);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 

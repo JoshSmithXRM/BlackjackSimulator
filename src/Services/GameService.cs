@@ -2,206 +2,214 @@ namespace Blackjack.Services
 {
     public class GameService
     {
-        private readonly IShoe _shoe;
+        private readonly IShoeService _shoeService;
         private readonly ICardCountingService _cardCountingService;
+        private readonly IGameOutputService _gameOutputService;
+        private readonly GameConfiguration _gameConfiguration;
+        private readonly List<Hand> _playerHands;
+        private readonly Hand _dealerHand;
 
-        public GameService(IShoe shoe, ICardCountingService cardCountingService)
+        public GameService(
+            IShoeService shoeService,
+            ICardCountingService cardCountingService,
+            IGameOutputService gameOutputService,
+            GameConfiguration gameConfiguration)
         {
-            _shoe = shoe;
+            _shoeService = shoeService;
             _cardCountingService = cardCountingService;
+            _gameOutputService = gameOutputService;
+            _gameConfiguration = gameConfiguration;
+            _playerHands = new List<Hand>();
+            _dealerHand = new Hand();
         }
 
         public void PlayGame()
         {
-            var playerHand = new Hand(); // Player's hand
-            var dealerHand = new Hand(); // Dealer's hand
-            var runningCount = 0; // Running count for card counting
-
             while (true)
             {
-                Console.WriteLine("=== New Hand ===");
+                _gameOutputService.NewHand();
 
-                // Deal two cards to the player
-                playerHand.AddCard(_shoe.DrawCard());
-                playerHand.AddCard(_shoe.DrawCard());
-
-                // Deal two cards to the dealer
-                dealerHand.AddCard(_shoe.DrawCard());
-                dealerHand.AddCard(_shoe.DrawCard());
-
-                Console.WriteLine($"Player's Hand: {playerHand.PartialString()}");
-                Console.WriteLine($"Dealer's Hand: {dealerHand.PartialString(true)}");
-
-                // Provide recommendation based on the running count
-                var recommendation = _cardCountingService.GetRecommendation(runningCount, playerHand, dealerHand.Cards[0]);
-                Console.WriteLine("");
-                Console.WriteLine($"Recommendation: {recommendation}");
-                Console.WriteLine("");
-
-                // Check if the player or dealer has blackjack
-                if (playerHand.IsBlackjack && dealerHand.IsBlackjack)
+                if (_shoeService.NeedsReshuffling())
                 {
-                    Console.WriteLine("=== Push! Both player and dealer have blackjack. ===");
-                }
-                else if (playerHand.IsBlackjack)
-                {
-                    Console.WriteLine("+++ Player wins with blackjack! +++");
-                }
-                else if (dealerHand.IsBlackjack)
-                {
-                    Console.WriteLine("--- Dealer wins with blackjack! ---");
-                }
-                else
-                {
-                    // Player's turn
-                    while (true)
-                    {
-                        var playerAction = GetPlayerAction();
-                        if (playerAction == PlayerAction.Hit)
-                        {
-                            playerHand.AddCard(_shoe.DrawCard());
-                            Console.WriteLine($"Player's Hand: {playerHand}");
-
-                            if (playerHand.IsBust)
-                            {
-                                Console.WriteLine("");
-                                Console.WriteLine("--- Player busts! Dealer wins. ---");
-                                Console.WriteLine("");
-                                break;
-                            }
-
-                            // Provide updated recommendation based on the new card
-                            recommendation = _cardCountingService.GetRecommendation(runningCount, playerHand, dealerHand.Cards[0]);
-                            Console.WriteLine("");
-                            Console.WriteLine($"Recommendation: {recommendation}");
-                            Console.WriteLine("");
-                        }
-                        else if (playerAction == PlayerAction.Stand)
-                        {
-                            // Dealer's turn
-                            while (dealerHand.GetTotal() < 17)
-                            {
-                                dealerHand.AddCard(_shoe.DrawCard());
-                                Console.WriteLine($"Dealer's Hand: {dealerHand}");
-
-                                if (dealerHand.IsBust)
-                                {
-                                    Console.WriteLine("");
-                                    Console.WriteLine("Dealer busts! Player wins.");
-                                    Console.WriteLine("");
-                                    break;
-                                }
-                            }
-
-                            Console.WriteLine("");
-                            if (!dealerHand.IsBust)
-                            {
-                                Console.WriteLine($"Dealer's Hand: {dealerHand}");
-
-                                if (playerHand.GetTotal() > dealerHand.GetTotal())
-                                {
-                                    Console.WriteLine("+++ Player wins! +++");
-                                }
-                                else if (playerHand.GetTotal() < dealerHand.GetTotal())
-                                {
-                                    Console.WriteLine("--- Dealer wins! ---");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("=== Push! It's a tie. ===");
-                                }
-                            }
-                            Console.WriteLine("");
-
-                            break;
-                        }
-                        else if (playerAction == PlayerAction.Double)
-                        {
-                            playerHand.AddCard(_shoe.DrawCard());
-                            Console.WriteLine($"Player's Hand: {playerHand}");
-
-                            if (playerHand.IsBust)
-                            {
-                                Console.WriteLine("");
-                                Console.WriteLine("--- Player busts! Dealer wins. ---");
-                                Console.WriteLine("");
-                                break;
-                            }
-
-                            // Provide updated recommendation based on the new card
-                            recommendation = _cardCountingService.GetRecommendation(runningCount, playerHand, dealerHand.Cards[0]);
-                            Console.WriteLine("");
-                            Console.WriteLine($"Recommendation: {recommendation}");
-                            Console.WriteLine("");
-
-                            // Double the bet
-                            //playerHand.Bet *= 2;
-
-                            // Dealer's turn
-                            while (dealerHand.GetTotal() < 17)
-                            {
-                                dealerHand.AddCard(_shoe.DrawCard());
-                                Console.WriteLine($"Dealer's Hand: {dealerHand}");
-
-                                if (dealerHand.IsBust)
-                                {
-                                    Console.WriteLine("");
-                                    Console.WriteLine("Dealer busts! Player wins.");
-                                    Console.WriteLine("");
-                                    break;
-                                }
-                            }
-
-                            Console.WriteLine("");
-                            if (!dealerHand.IsBust)
-                            {
-                                Console.WriteLine($"Dealer's Hand: {dealerHand}");
-
-                                if (playerHand.GetTotal() > dealerHand.GetTotal())
-                                {
-                                    Console.WriteLine("+++ Player wins! +++");
-                                }
-                                else if (playerHand.GetTotal() < dealerHand.GetTotal())
-                                {
-                                    Console.WriteLine("--- Dealer wins! ---");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("=== Push! It's a tie. ===");
-                                }
-                            }
-                            Console.WriteLine("");
-
-                            break;
-                        }
-                    }
+                    _gameOutputService.ReshuffleShoe();
+                    _shoeService.InitializeShoe();
                 }
 
-                // Clear the hands for the next hand
-                playerHand.Clear();
-                dealerHand.Clear();
+                DealInitialCards();
+
+                if (CheckForBlackjack())
+                {
+                    EndRound();
+                    continue;
+                }
+
+                HandlePlayerTurns();
+
+                if (!CheckPlayerBusts())
+                {
+                    HandleDealerTurn();
+                    DetermineRoundWinner();
+                }
+
+                _playerHands.Clear();
+                _dealerHand.Clear();
+
+                if (!PlayAnotherHand())
+                    break;
             }
         }
 
-        // Helper method to get player action
-        public static PlayerAction GetPlayerAction()
+        private void DealInitialCards()
         {
-            Console.WriteLine("Choose an action:");
-            Console.WriteLine("1. Hit");
-            Console.WriteLine("2. Stand");
-            Console.WriteLine("3. Double");
-            Console.WriteLine("===============");
+            for (int i = 0; i < _gameConfiguration.NumberOfPlayerHands; i++)
+            {
+                var playerHand = new Hand();
+                playerHand.AddCard(_shoeService.DrawCard());
+                playerHand.AddCard(_shoeService.DrawCard());
+                _playerHands.Add(playerHand);
+                _gameOutputService.PlayerHand(playerHand.PartialString());
+            }
+
+            _dealerHand.AddCard(_shoeService.DrawCard());
+            _dealerHand.AddCard(_shoeService.DrawCard(true));
+            _gameOutputService.DealerHand(_dealerHand.PartialString(true));
+        }
+
+        private bool CheckForBlackjack()
+        {
+            if (_playerHands.Any(hand => hand.IsBlackjack) && _dealerHand.IsBlackjack)
+            {
+                _gameOutputService.Push();
+                return true;
+            }
+            else if (_playerHands.Any(hand => hand.IsBlackjack))
+            {
+                _gameOutputService.PlayerWinsWithBlackjack();
+                return true;
+            }
+            else if (_dealerHand.IsBlackjack)
+            {
+                _gameOutputService.DealerWinsWithBlackjack();
+                return true;
+            }
+
+            return false;
+        }
+
+        private void HandlePlayerTurns()
+        {
+            for (int i = 0; i < _playerHands.Count; i++)
+            {
+                var playerHand = _playerHands[i];
+
+                while (true)
+                {
+                    var playerAction = _gameOutputService.GetPlayerAction();
+
+                    if (playerAction == PlayerAction.Hit)
+                    {
+                        playerHand.AddCard(_shoeService.DrawCard());
+                        _gameOutputService.PlayerHand(playerHand.ToString());
+
+                        if (playerHand.IsBust)
+                        {
+                            _gameOutputService.PlayerBusts();
+                            break;
+                        }
+
+                        _gameOutputService.Recommendation(_cardCountingService.GetRecommendation(0, playerHand, _dealerHand.Cards[0]));
+                    }
+                    else if (playerAction == PlayerAction.Stand)
+                    {
+                        break;
+                    }
+                    else if (playerAction == PlayerAction.Double)
+                    {
+                        playerHand.AddCard(_shoeService.DrawCard());
+                        _gameOutputService.PlayerHand(playerHand.ToString());
+
+                        if (playerHand.IsBust)
+                        {
+                            _gameOutputService.PlayerBusts();
+                            break;
+                        }
+
+                        _gameOutputService.Recommendation(_cardCountingService.GetRecommendation(0, playerHand, _dealerHand.Cards[0]));
+                        break;
+                    }
+                }
+            }
+        }
+
+        private bool CheckPlayerBusts()
+        {
+            bool anyBusts = false;
+
+            for (int i = 0; i < _playerHands.Count; i++)
+            {
+                var playerHand = _playerHands[i];
+
+                if (playerHand.IsBust)
+                {
+                    _gameOutputService.PlayerBusts();
+                    anyBusts = true;
+                }
+            }
+
+            return anyBusts;
+        }
+
+        private void HandleDealerTurn()
+        {
+            while (_dealerHand.GetTotal() < 17)
+            {
+                _dealerHand.AddCard(_shoeService.DrawCard());
+                _gameOutputService.DealerHand(_dealerHand.ToString());
+
+                if (_dealerHand.IsBust)
+                {
+                    _gameOutputService.DealerBusts();
+                    break;
+                }
+            }
+        }
+
+        private void DetermineRoundWinner()
+        {
+            var dealerTotal = _dealerHand.GetTotal();
+
+            for (int i = 0; i < _playerHands.Count; i++)
+            {
+                var playerHand = _playerHands[i];
+                var playerTotal = playerHand.GetTotal();
+
+                if (playerTotal > dealerTotal)
+                    _gameOutputService.PlayerWins();
+                else if (playerTotal < dealerTotal)
+                    _gameOutputService.DealerWins();
+                else
+                    _gameOutputService.Tie();
+            }
+        }
+
+        private bool PlayAnotherHand()
+        {
+            _gameOutputService.WriteLine("Do you want to play another hand? (Y/N)");
 
             while (true)
             {
                 var input = Console.ReadLine();
-                if (int.TryParse(input, out var choice) && Enum.IsDefined(typeof(PlayerAction), choice - 1))
+
+                if (input.Equals("Y", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"Player chooses {((PlayerAction)(choice - 1)).ToString().ToLower()}.");
-                    return (PlayerAction)(choice - 1);
+                    return true;
+                }
+                else if (input.Equals("N", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
                 }
 
-                Console.WriteLine("Invalid input. Please try again.");
+                _gameOutputService.InvalidInput();
             }
         }
     }

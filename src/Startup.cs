@@ -2,14 +2,17 @@ namespace Blackjack
 {
     public class Startup
     {
-        public void ConfigureServices(IServiceCollection services, int deckCount)
+        public static void ConfigureServices(IServiceCollection services, GameConfiguration gameConfiguration)
         {
             services
-                .AddTransient<IShoe>(provider => new Shoe(deckCount)) 
+                .AddSingleton(gameConfiguration)
                 .AddTransient<IHand, Hand>()
                 .AddTransient<ICard, Card>()
-                .AddTransient<GameService>()
-                .AddTransient<ICardCountingService, CardCountingService>();
+                .AddTransient<IShoeService, ShoeService>()
+                .AddTransient<ICardCountingService, CardCountingService>()
+                .AddTransient<IOutputService, ConsoleOutputService>()
+                .AddTransient<IGameOutputService, ConsoleGameOutputService>()
+                .AddTransient<GameService>();
         }
     }
 }
