@@ -2,94 +2,37 @@ namespace Blackjack.Services
 {
     public class CardCountingService : ICardCountingService
     {
-        public CountType GetCountType(int runningCount)
+        private readonly ICountingSystem _countingSystem;
+
+        public int RunningCount => _countingSystem.RunningCount;
+
+        public CountType CountType => _countingSystem.CountType;
+
+        public CardCountingService(ICountingSystemFactory countingSystemFactory, GameConfiguration gameConfiguration)
         {
-            if (runningCount >= 1)
-            {
-                return CountType.Positive;
-            }
-            else if (runningCount <= -1)
-            {
-                return CountType.Negative;
-            }
-            else
-            {
-                return CountType.Neutral;
-            }
+            CountingSystem configuredCountingSystem = gameConfiguration.CountingSystem;
+            _countingSystem = countingSystemFactory.CreateCountingSystem(configuredCountingSystem);
         }
 
-        public string GetRecommendation(int runningCount, Hand playerHand, ICard dealerFirstCard)
+        public void ResetCount()
         {
-            CountType countType = GetCountType(runningCount);
+            _countingSystem.ResetCount();
+        }
 
+        public Recommendation GetRecommendation(IHand playerHand, ICard dealerFirstCard)
+        {
             if (playerHand.IsBlackjack)
             {
-                return $"Count: {runningCount} ({countType}). Recommendation: Blackjack!";
+                return new Recommendation(_countingSystem.RunningCount, _countingSystem.CountType, null);
             }
-            else if (playerHand.CanDoubleDown)
+
+            if (playerHand.IsBust)
             {
-                return $"Count: {runningCount} ({countType}). Recommendation: Double down!";
+                return new Recommendation(_countingSystem.RunningCount, _countingSystem.CountType, null);
             }
-            else if (playerHand.GetTotal() >= 19)
-            {
-                return $"Count: {runningCount} ({countType}). Recommendation: Stand.";
-            }
-            else if (playerHand.GetTotal() == 18)
-            {
-                if (dealerFirstCard.Rank >= Rank.Nine && dealerFirstCard.Rank <= Rank.Ace)
-                {
-                    return $"Count: {runningCount} ({countType}). Recommendation: Hit.";
-                }
-                else
-                {
-                    return $"Count: {runningCount} ({countType}). Recommendation: Stand.";
-                }
-            }
-            else if (playerHand.GetTotal() == 17)
-            {
-                if (dealerFirstCard.Rank >= Rank.Ten && dealerFirstCard.Rank <= Rank.Ace)
-                {
-                    return $"Count: {runningCount} ({countType}). Recommendation: Hit.";
-                }
-                else
-                {
-                    return $"Count: {runningCount} ({countType}). Recommendation: Stand.";
-                }
-            }
-            else if (playerHand.GetTotal() == 16)
-            {
-                if (dealerFirstCard.Rank >= Rank.Nine && dealerFirstCard.Rank <= Rank.Ace)
-                {
-                    return $"Count: {runningCount} ({countType}). Recommendation: Hit. Consider surrender against Ace.";
-                }
-                else
-                {
-                    return $"Count: {runningCount} ({countType}). Recommendation: Stand.";
-                }
-            }
-            else if (playerHand.GetTotal() == 15)
-            {
-                if (dealerFirstCard.Rank >= Rank.Ten && dealerFirstCard.Rank <= Rank.Ace)
-                {
-                    return $"Count: {runningCount} ({countType}). Recommendation: Hit. Consider surrender against 10.";
-                }
-                else
-                {
-                    return $"Count: {runningCount} ({countType}). Recommendation: Stand.";
-                }
-            }
-            else if ((playerHand.GetTotal() == 13 || playerHand.GetTotal() == 14) && dealerFirstCard.Rank >= Rank.Two && dealerFirstCard.Rank <= Rank.Six)
-            {
-                return $"Count: {runningCount} ({countType}). Recommendation: Stand.";
-            }
-            else if (playerHand.GetTotal() == 12 && dealerFirstCard.Rank >= Rank.Four && dealerFirstCard.Rank <= Rank.Six)
-            {
-                return $"Count: {runningCount} ({countType}). Recommendation: Stand.";
-            }
-            else
-            {
-                return $"Count: {runningCount} ({countType}). Recommendation: Hit.";
-            }
+
+            PlayerAction action = _countingSystem.GetRecommendation(playerHand, dealerFirstCard);
+            return new Recommendation(_countingSystem.RunningCount, _countingSystem.CountType, action);
         }
     }
 }

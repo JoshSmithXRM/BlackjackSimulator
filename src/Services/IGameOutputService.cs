@@ -1,7 +1,8 @@
-namespace Blackjack.Interfaces
+namespace Blackjack.Services
 {
     public interface IGameOutputService
     {
+        void ClearOutput();
         void NewHand();
         void PlayerHand(string hand);
         void DealerHand(string hand);
@@ -14,8 +15,12 @@ namespace Blackjack.Interfaces
         void PlayerWins();
         void DealerWins();
         void Tie();
-        void InvalidInput();
+        void InvalidAction();
         void ReshuffleShoe();
-        PlayerAction GetPlayerAction();
+        void GameOver();
+        void Recommendation(Recommendation recommendation);
+        void ShowResult(HandResult result);
+        void ShowHands(Hand playerHand, Hand dealerHand);
+        void DisplayResult(HandOutcome outcome);
     }
 }

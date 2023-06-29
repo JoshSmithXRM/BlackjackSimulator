@@ -1,4 +1,4 @@
-namespace Blackjack.Interfaces
+namespace Blackjack.Services
 {
     public interface IGameService
     {

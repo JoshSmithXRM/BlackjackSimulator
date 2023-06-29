@@ -4,6 +4,8 @@ namespace Blackjack.Enums
     {
         Hit,
         Stand,
-        Double
+        Double,
+        Split,
+        Surrender
     }
 }

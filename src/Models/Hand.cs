@@ -32,6 +32,15 @@ namespace Blackjack.Models
 
         public bool CanDoubleDown => cards.Count == 2;
 
+        public bool CanSplit => cards.Count == 2 && cards[0].Rank == cards[1].Rank;
+
+        public decimal BetAmount { get; internal set; }
+
+        public Hand(decimal betAmount = 0)
+        {
+            BetAmount = betAmount;
+        }
+
         public override string ToString()
         {
             return string.Join(", ", cards);
@@ -63,6 +72,11 @@ namespace Blackjack.Models
         public void Clear()
         {
             cards.Clear();
+        }
+
+        internal ICard GetUpcard()
+        {
+            throw new NotImplementedException();
         }
     }
 }

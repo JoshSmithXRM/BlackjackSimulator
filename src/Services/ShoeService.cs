@@ -3,33 +3,30 @@ namespace Blackjack.Services
     public class ShoeService : IShoeService
     {
         private readonly GameConfiguration _gameConfiguration;
-#pragma warning disable IDE0044 // Add readonly modifier
-        private List<ICard> _cards;
-#pragma warning restore IDE0044 // Add readonly modifier
-        private int _reshuffleIndex;
+        private readonly List<ICard> _cards;
+        private int _currentIndex;
 
         public ShoeService(GameConfiguration gameConfiguration)
         {
             _gameConfiguration = gameConfiguration;
             _cards = new List<ICard>();
+            _currentIndex = 0;
             InitializeShoe();
         }
 
-        public IReadOnlyList<ICard> Cards => _cards.AsReadOnly();
-
         public ICard DrawCard()
         {
-            if (_cards.Count == 0)
+            if (_currentIndex >= _cards.Count)
             {
                 throw new InvalidOperationException("Cannot draw a card from an empty shoe.");
             }
 
-            var card = _cards[0];
-            _cards.RemoveAt(0);
+            var card = _cards[_currentIndex];
+            _currentIndex++;
             return card;
         }
 
-        public void InitializeShoe()
+        private void InitializeShoe()
         {
             _cards.Clear(); // Clear the cards list before re-initializing
 
@@ -44,16 +41,11 @@ namespace Blackjack.Services
                 }
             }
 
-            _reshuffleIndex = (int)(RandomRange(_gameConfiguration.PenetrationRateRange.Min, _gameConfiguration.PenetrationRateRange.Max) * _cards.Count);
-            Reshuffle();
+            _currentIndex = 0; // Reset the current index to the beginning of the shoe
+            ShuffleCards(); // Shuffle the cards
         }
 
-        public bool NeedsReshuffling()
-        {
-            return _cards.Count <= _reshuffleIndex;
-        }
-
-        public void Reshuffle()
+        public void ShuffleCards()
         {
             var rng = new Random();
 
@@ -64,10 +56,9 @@ namespace Blackjack.Services
             }
         }
 
-        private static double RandomRange(double min, double max)
+        public bool NeedsReshuffling()
         {
-            var rnd = new Random();
-            return rnd.NextDouble() * (max - min) + min;
+            return _currentIndex >= _cards.Count;
         }
     }
 }

@@ -4,213 +4,139 @@ namespace Blackjack.Services
     {
         private readonly IShoeService _shoeService;
         private readonly ICardCountingService _cardCountingService;
+        private readonly IGameInputService _gameInputService;
         private readonly IGameOutputService _gameOutputService;
+        private readonly IResultStorageService _resultStorageService;
         private readonly GameConfiguration _gameConfiguration;
-        private readonly List<Hand> _playerHands;
-        private readonly Hand _dealerHand;
+        private readonly RoundManager _roundManager;
+        private readonly IHandEvaluator _handEvaluator;
 
         public GameService(
             IShoeService shoeService,
             ICardCountingService cardCountingService,
+            IGameInputService gameInputService,
             IGameOutputService gameOutputService,
-            GameConfiguration gameConfiguration)
+            IResultStorageService resultStorageService,
+            GameConfiguration gameConfiguration,
+            RoundManager roundManager,
+            IHandEvaluator handEvaluator)
         {
             _shoeService = shoeService;
             _cardCountingService = cardCountingService;
+            _gameInputService = gameInputService;
             _gameOutputService = gameOutputService;
+            _resultStorageService = resultStorageService;
             _gameConfiguration = gameConfiguration;
-            _playerHands = new List<Hand>();
-            _dealerHand = new Hand();
+            _roundManager = roundManager;
+            _handEvaluator = handEvaluator;
         }
 
         public void PlayGame()
         {
-            while (true)
+            _gameOutputService.ClearOutput();
+
+            int numberOfPlayerHands = _gameInputService.GetNumberOfHands();
+            decimal wagerAmount = _gameInputService.GetWagerAmount();
+
+            
+
+            for (int i = 0; i < numberOfPlayerHands; i++)
             {
-                _gameOutputService.NewHand();
-
-                if (_shoeService.NeedsReshuffling())
-                {
-                    _gameOutputService.ReshuffleShoe();
-                    _shoeService.InitializeShoe();
-                }
-
-                DealInitialCards();
-
-                if (CheckForBlackjack())
-                {
-                    EndRound();
-                    continue;
-                }
-
-                HandlePlayerTurns();
-
-                if (!CheckPlayerBusts())
-                {
-                    HandleDealerTurn();
-                    DetermineRoundWinner();
-                }
-
-                _playerHands.Clear();
-                _dealerHand.Clear();
-
-                if (!PlayAnotherHand())
-                    break;
+                PlayHand(wagerAmount);
+                _gameOutputService.ClearOutput();
             }
+
+            _roundManager.CompleteRound();
+           
         }
 
-        private void DealInitialCards()
+        private void PlayHand(decimal wagerAmount)
         {
-            for (int i = 0; i < _gameConfiguration.NumberOfPlayerHands; i++)
-            {
-                var playerHand = new Hand();
-                playerHand.AddCard(_shoeService.DrawCard());
-                playerHand.AddCard(_shoeService.DrawCard());
-                _playerHands.Add(playerHand);
-                _gameOutputService.PlayerHand(playerHand.PartialString());
-            }
+            Hand playerHand = new(wagerAmount);
+            Hand dealerHand = new();
 
-            _dealerHand.AddCard(_shoeService.DrawCard());
-            _dealerHand.AddCard(_shoeService.DrawCard(true));
-            _gameOutputService.DealerHand(_dealerHand.PartialString(true));
-        }
+            playerHand.AddCard(_shoeService.DrawCard());
+            dealerHand.AddCard(_shoeService.DrawCard());
+            playerHand.AddCard(_shoeService.DrawCard());
+            dealerHand.AddCard(_shoeService.DrawCard());
 
-        private bool CheckForBlackjack()
-        {
-            if (_playerHands.Any(hand => hand.IsBlackjack) && _dealerHand.IsBlackjack)
-            {
-                _gameOutputService.Push();
-                return true;
-            }
-            else if (_playerHands.Any(hand => hand.IsBlackjack))
-            {
-                _gameOutputService.PlayerWinsWithBlackjack();
-                return true;
-            }
-            else if (_dealerHand.IsBlackjack)
-            {
-                _gameOutputService.DealerWinsWithBlackjack();
-                return true;
-            }
-
-            return false;
-        }
-
-        private void HandlePlayerTurns()
-        {
-            for (int i = 0; i < _playerHands.Count; i++)
-            {
-                var playerHand = _playerHands[i];
-
-                while (true)
-                {
-                    var playerAction = _gameOutputService.GetPlayerAction();
-
-                    if (playerAction == PlayerAction.Hit)
-                    {
-                        playerHand.AddCard(_shoeService.DrawCard());
-                        _gameOutputService.PlayerHand(playerHand.ToString());
-
-                        if (playerHand.IsBust)
-                        {
-                            _gameOutputService.PlayerBusts();
-                            break;
-                        }
-
-                        _gameOutputService.Recommendation(_cardCountingService.GetRecommendation(0, playerHand, _dealerHand.Cards[0]));
-                    }
-                    else if (playerAction == PlayerAction.Stand)
-                    {
-                        break;
-                    }
-                    else if (playerAction == PlayerAction.Double)
-                    {
-                        playerHand.AddCard(_shoeService.DrawCard());
-                        _gameOutputService.PlayerHand(playerHand.ToString());
-
-                        if (playerHand.IsBust)
-                        {
-                            _gameOutputService.PlayerBusts();
-                            break;
-                        }
-
-                        _gameOutputService.Recommendation(_cardCountingService.GetRecommendation(0, playerHand, _dealerHand.Cards[0]));
-                        break;
-                    }
-                }
-            }
-        }
-
-        private bool CheckPlayerBusts()
-        {
-            bool anyBusts = false;
-
-            for (int i = 0; i < _playerHands.Count; i++)
-            {
-                var playerHand = _playerHands[i];
-
-                if (playerHand.IsBust)
-                {
-                    _gameOutputService.PlayerBusts();
-                    anyBusts = true;
-                }
-            }
-
-            return anyBusts;
-        }
-
-        private void HandleDealerTurn()
-        {
-            while (_dealerHand.GetTotal() < 17)
-            {
-                _dealerHand.AddCard(_shoeService.DrawCard());
-                _gameOutputService.DealerHand(_dealerHand.ToString());
-
-                if (_dealerHand.IsBust)
-                {
-                    _gameOutputService.DealerBusts();
-                    break;
-                }
-            }
-        }
-
-        private void DetermineRoundWinner()
-        {
-            var dealerTotal = _dealerHand.GetTotal();
-
-            for (int i = 0; i < _playerHands.Count; i++)
-            {
-                var playerHand = _playerHands[i];
-                var playerTotal = playerHand.GetTotal();
-
-                if (playerTotal > dealerTotal)
-                    _gameOutputService.PlayerWins();
-                else if (playerTotal < dealerTotal)
-                    _gameOutputService.DealerWins();
-                else
-                    _gameOutputService.Tie();
-            }
-        }
-
-        private bool PlayAnotherHand()
-        {
-            _gameOutputService.WriteLine("Do you want to play another hand? (Y/N)");
+            var playerActionsTaken = new List<PlayerAction>();
 
             while (true)
             {
-                var input = Console.ReadLine();
+                _gameOutputService.ShowHands(playerHand, dealerHand);
 
-                if (input.Equals("Y", StringComparison.OrdinalIgnoreCase))
+                Recommendation recommendation = _cardCountingService.GetRecommendation(playerHand, dealerHand.GetUpcard());
+                _gameOutputService.Recommendation(recommendation);
+
+                var validActions = new List<PlayerAction>
                 {
-                    return true;
-                }
-                else if (input.Equals("N", StringComparison.OrdinalIgnoreCase))
+                    PlayerAction.Hit,
+                    PlayerAction.Stand
+                };
+
+                if (playerHand.CanDoubleDown)
                 {
-                    return false;
+                    validActions.Add(PlayerAction.Double);
                 }
 
-                _gameOutputService.InvalidInput();
+                if (playerHand.CanSplit)
+                {
+                    validActions.Add(PlayerAction.Split);
+                }
+
+                PlayerAction playerAction = _gameInputService.GetPlayerAction(validActions);
+                playerActionsTaken.Add(playerAction);
+                switch (playerAction)
+                {
+                    case PlayerAction.Hit:
+                        playerHand.AddCard(_shoeService.DrawCard());
+                        if (playerHand.IsBust)
+                        {
+                            _gameOutputService.PlayerBusts();
+                            _resultStorageService.StoreHandResult(_handEvaluator.EvaluateHand(playerHand, dealerHand, _cardCountingService.RunningCount, _cardCountingService.CountType, playerActionsTaken));
+                            return;
+                        }
+                        break;
+                    case PlayerAction.Stand:
+                        break;
+                    case PlayerAction.Double:
+                        if (playerHand.CanDoubleDown)
+                        {
+                            playerHand.AddCard(_shoeService.DrawCard());
+                            if (playerHand.IsBust)
+                            {
+                                _gameOutputService.PlayerBusts();
+                                _resultStorageService.StoreHandResult(_handEvaluator.EvaluateHand(playerHand, dealerHand, _cardCountingService.RunningCount, _cardCountingService.CountType, playerActionsTaken));
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            _gameOutputService.InvalidAction();
+                            continue;
+                        }
+                    default:
+                        _gameOutputService.InvalidAction();
+                        continue;
+                }
+
+                if (playerAction == PlayerAction.Stand || playerHand.IsBust)
+                    break;
             }
+
+            while (dealerHand.GetTotal() < 17 && !playerHand.IsBust)
+            {
+                dealerHand.AddCard(_shoeService.DrawCard());
+                _gameOutputService.ShowHands(playerHand, dealerHand);
+            }
+
+            _gameOutputService.ShowHands(playerHand, dealerHand);
+
+            HandResult handResult = _handEvaluator.EvaluateHand(playerHand, dealerHand, _cardCountingService.RunningCount, _cardCountingService.CountType, playerActionsTaken);
+
+            _gameOutputService.DisplayResult(handResult.Outcome);
+            _resultStorageService.StoreHandResult(handResult);
         }
     }
 }

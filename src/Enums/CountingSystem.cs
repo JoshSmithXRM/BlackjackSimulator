@@ -7,7 +7,7 @@ namespace Blackjack.Enums
         HiOptII,
         KO,
         OmegaII,
-        //Red7,
-        //ZenCount
+        Red7,
+        ZenCount
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Blackjack.Interfaces
+namespace Blackjack.Models
 {
     public interface IHand
     {
