@@ -1,4 +1,4 @@
-namespace Blackjack.Interfaces
+namespace Blackjack.Models
 {
     public interface IRankable
     {

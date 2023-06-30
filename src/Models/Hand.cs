@@ -3,6 +3,7 @@ namespace Blackjack.Models
     public class Hand : IHand
     {
         private readonly List<ICard> cards = new();
+        private readonly IHandFactory _handFactory;
 
         public IReadOnlyList<ICard> Cards => cards;
 
@@ -30,7 +31,23 @@ namespace Blackjack.Models
 
         public bool IsBlackjack => cards.Count == 2 && GetTotal() == 21;
 
+        public bool IsSoft => cards.Any(card => card.Rank == Rank.Ace) && GetTotal() <= 21;
+
         public bool CanDoubleDown => cards.Count == 2;
+
+        public bool CanSplit => cards.Count == 2 && cards[0].Rank == cards[1].Rank;
+
+        public decimal BetAmount { get; set; }
+
+        public List<PlayerAction> ActionsTaken { get; }
+
+        public bool CanSurrender => cards.Count == 2 && !IsBlackjack;
+
+        public Hand(IHandFactory handFactory)
+        {
+            _handFactory = handFactory;
+            ActionsTaken = new List<PlayerAction>();
+        }
 
         public override string ToString()
         {
@@ -52,7 +69,7 @@ namespace Blackjack.Models
             }
             else if (cards.Count == 1)
             {
-                return $"{cards.First()},";
+                return $"{cards.First()}";
             }
             else
             {
@@ -63,6 +80,24 @@ namespace Blackjack.Models
         public void Clear()
         {
             cards.Clear();
+        }
+
+        public ICard GetUpCard()
+        {
+            return cards[0];
+        }
+
+        public ICard GetDownCard()
+        {
+            return cards[1];
+        }
+
+        public IHand Split()
+        {
+            var splitHand = _handFactory.CreateHand(BetAmount);
+            splitHand.AddCard(cards[1]);
+            cards.RemoveAt(1);
+            return splitHand;
         }
     }
 }
