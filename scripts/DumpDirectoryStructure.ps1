@@ -1,9 +1,9 @@
-$directory = "D:\VS\Personal\Blackjack"
-$directoryStructure = Get-ChildItem -Recurse $directory | Select-Object FullName
+$directory = "D:\VS\BlackjackSimulator\src"
 
-$directoryStructureString = ""
-foreach ($item in $directoryStructure) {
-    $directoryStructureString += $item.FullName + "`n"
-}
+$directoryStructure = Get-ChildItem -Recurse $directory -File |
+    Where-Object {
+        $_.DirectoryName -notlike "*\bin*" -and $_.DirectoryName -notlike "*\obj*"
+    } |
+    Select-Object -ExpandProperty FullName
 
-$directoryStructureString | Set-Clipboard
+$directoryStructure | Set-Clipboard
