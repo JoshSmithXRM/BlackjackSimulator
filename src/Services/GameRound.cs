@@ -11,6 +11,7 @@ namespace Blackjack.Services
         private readonly List<IHand> _playerHands;
         private IHand _dealerHand;
         private readonly List<HandResult> _roundResults;
+        private bool _simulationMode;
 
         public GameRound(
             IHandFactory handFactory,
@@ -29,17 +30,22 @@ namespace Blackjack.Services
             _playerHands = new List<IHand>();
             _dealerHand = _handFactory.CreateHand();
             _roundResults = new List<HandResult>();
+            _simulationMode = false;
         }
 
-        public List<HandResult> Play(int numberOfPlayerHands, decimal betAmount)
+        public List<HandResult> Play(int numberOfPlayerHands, decimal betAmount, bool simulationMode = false)
         {
+            _simulationMode = simulationMode;
+            _roundResults.Clear();
             InitializeHands(numberOfPlayerHands, betAmount);
             DealInitialCards();
-            _roundResults.Clear();
 
             foreach (IHand playerHand in _playerHands)
             {
-                _gameOutputService.ClearOutput();
+                if (!simulationMode)
+                {
+                    _gameOutputService.ClearOutput();
+                }
                 PlayHand(playerHand, _dealerHand);
             }
 
@@ -92,52 +98,88 @@ namespace Blackjack.Services
         {
             while (true)
             {
-                _gameOutputService.ClearOutput();
-                _gameOutputService.ShowHands(playerHand, dealerHand, true);
-
-                if (playerHand.IsBust)
+                if (_simulationMode)
                 {
-                    _gameInputService.PlayerBust();
-                    return;
+                    if (playerHand.IsBust || playerHand.IsBlackjack || playerHand.GetTotal() == 21)
+                    {
+                        return;
+                    }
+
+                    Recommendation recommendation = _cardCountingService.GetRecommendation(playerHand, dealerHand.GetUpCard());
+                    switch (recommendation.Action)
+                    {
+                        case PlayerAction.Hit:
+                            playerHand.AddCard(DrawCard());
+                            break;
+                        case PlayerAction.Stand:
+                            return;
+                        case PlayerAction.Double:
+                            playerHand.BetAmount *= 2;
+                            playerHand.AddCard(DrawCard());
+                            return;
+                        case PlayerAction.Split:
+                            var newHand = playerHand.Split();
+                            playerHand.AddCard(DrawCard());
+                            newHand.AddCard(DrawCard());
+                            _playerHands.Add(newHand);
+                            PlayHand(newHand, dealerHand);
+                            return;
+                        case PlayerAction.Surrender:
+                            return;
+                        default:
+                            return;
+                    }
+                }
+                else
+                {
+                    _gameOutputService.ClearOutput();
+                    _gameOutputService.ShowHands(playerHand, dealerHand, true);
+
+                    if (playerHand.IsBust)
+                    {
+                        _gameInputService.PlayerBust();
+                        return;
+                    }
+
+                    if (playerHand.IsBlackjack || playerHand.GetTotal() == 21)
+                    {
+                        _gameInputService.PlayerBlackjack();
+                        return;
+                    }
+
+                    Recommendation recommendation = _cardCountingService.GetRecommendation(playerHand, dealerHand.GetUpCard());
+                    _gameOutputService.Recommendation(recommendation);
+
+                    var validActions = GetValidActions(playerHand);
+                    PlayerAction playerAction = _gameInputService.GetPlayerAction(validActions);
+                    playerHand.ActionsTaken.Add(playerAction);
+
+                    switch (playerAction)
+                    {
+                        case PlayerAction.Hit:
+                            playerHand.AddCard(DrawCard());
+                            break;
+                        case PlayerAction.Stand:
+                            return;
+                        case PlayerAction.Double:
+                            playerHand.BetAmount *= 2;
+                            playerHand.AddCard(DrawCard());
+                            return;
+                        case PlayerAction.Split:
+                            var newHand = playerHand.Split();
+                            playerHand.AddCard(DrawCard());
+                            newHand.AddCard(DrawCard());
+                            _playerHands.Add(newHand);
+                            PlayHand(newHand, dealerHand);
+                            return;
+                        case PlayerAction.Surrender:
+                            return;
+                        default:
+                            _gameOutputService.InvalidAction();
+                            continue;
+                    }
                 }
 
-                if (playerHand.IsBlackjack || playerHand.GetTotal() == 21)
-                {
-                    _gameInputService.PlayerBlackjack();
-                    return;
-                }
-
-                Recommendation recommendation = _cardCountingService.GetRecommendation(playerHand, dealerHand.GetUpCard());
-                _gameOutputService.Recommendation(recommendation);
-
-                var validActions = GetValidActions(playerHand);
-                PlayerAction playerAction = _gameInputService.GetPlayerAction(validActions);
-                playerHand.ActionsTaken.Add(playerAction);
-
-                switch (playerAction)
-                {
-                    case PlayerAction.Hit:
-                        playerHand.AddCard(DrawCard());
-                        break;
-                    case PlayerAction.Stand:
-                        return;
-                    case PlayerAction.Double:
-                        playerHand.BetAmount *= 2;
-                        playerHand.AddCard(DrawCard());
-                        return;
-                    case PlayerAction.Split:
-                        var newHand = playerHand.Split();
-                        playerHand.AddCard(DrawCard());
-                        newHand.AddCard(DrawCard());
-                        _playerHands.Add(newHand);
-                        PlayHand(newHand, dealerHand);
-                        return;
-                    case PlayerAction.Surrender:
-                        return;
-                    default:
-                        _gameOutputService.InvalidAction();
-                        continue;
-                }
             }
         }
 

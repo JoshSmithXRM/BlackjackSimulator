@@ -41,12 +41,12 @@ namespace Blackjack.Services
                 }
             }
 
-            _currentIndex = 0; // Reset the current index to the beginning of the shoe
-            ShuffleCards(); // Shuffle the cards
+            ShuffleCards();
         }
 
         public void ShuffleCards()
         {
+            _currentIndex = 0;
             var rng = new Random();
 
             for (var i = 0; i < _cards.Count; i++)
@@ -58,7 +58,15 @@ namespace Blackjack.Services
 
         public bool NeedsReshuffling()
         {
-            return _currentIndex >= _cards.Count;
+            var penetrationRate = (double)_currentIndex / _cards.Count;
+            if (penetrationRate >= _gameConfiguration.PenetrationRateRange.Min && penetrationRate <= _gameConfiguration.PenetrationRateRange.Max)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

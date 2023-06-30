@@ -22,14 +22,36 @@ namespace Blackjack
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
+            var outputService = serviceProvider.GetService<IGameOutputService>();
+            if (outputService == null)
+            {
+                Console.WriteLine("Output service missing");
+                return;
+            }
+
+            var inputService = serviceProvider.GetService<IGameInputService>();
+            if (inputService == null)
+            {
+                outputService.ServiceMissing(nameof(IGameInputService));
+                return;
+            }
+
             var gameService = serviceProvider.GetService<IGameService>();
             if (gameService == null)
             {
-                Console.WriteLine("Failed to retrieve GameService from the service provider.");
+                outputService.ServiceMissing(nameof(IGameService));
                 return;
             }
-            gameService.PlayGame();
+
+            var simulationConfiguration = inputService.GetSimulationConfiguration();
+            if (simulationConfiguration == null)
+            {
+                gameService.PlayGame();
+            }
+            else
+            {
+                gameService.RunSimulation(simulationConfiguration);
+            }
         }
     }
 }
-

@@ -6,7 +6,7 @@ namespace Blackjack
         {
             services
                 .AddSingleton(gameConfiguration)
-                .AddTransient<IShoeService, ShoeService>()
+                .AddSingleton<IShoeService, ShoeService>()
                 .AddTransient<ICardCountingService, CardCountingService>()
                 .AddTransient<ICountingSystemFactory, CountingSystemFactory>()
                 .AddTransient<IOutputService, ConsoleOutputService>()

@@ -38,5 +38,10 @@ namespace Blackjack.Services
         {
             _gameDialogService.PlayerBlackjack();
         }
+
+        public SimulationConfiguration? GetSimulationConfiguration()
+        {
+            return _gameDialogService.GetSimulationConfiguration();
+        }
     }
 }

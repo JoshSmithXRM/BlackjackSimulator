@@ -27,7 +27,7 @@ namespace Blackjack.Services
         public void PlayGame()
         {
             _gameOutputService.ClearOutput();
-
+            
             while (true)
             {
                 int numberOfPlayerHands = _gameInputService.GetNumberOfHands();
@@ -37,6 +37,7 @@ namespace Blackjack.Services
                 _sessionResults.AddRange(roundResults);
                 ShowRoundResults(roundResults);
 
+                Console.WriteLine($"NeedsReshuffling {_shoeService.NeedsReshuffling()}");
                 if (_shoeService.NeedsReshuffling())
                 {
                     ReshuffleShoe();
@@ -52,9 +53,33 @@ namespace Blackjack.Services
             _gameOutputService.GameOver();
         }
 
-        private void ReshuffleShoe()
+        public void RunSimulation(SimulationConfiguration simulationConfiguration)
         {
-            _gameOutputService.ReshuffleShoe();
+            _gameOutputService.ClearOutput();
+            _gameOutputService.SimulationStarted();
+
+            for (int i = 0; i < simulationConfiguration.NumberOfRounds; i++)
+            {
+                List<HandResult> roundResults = _gameRound.Play(simulationConfiguration.NumberOfHands, simulationConfiguration.BetAmount, true);
+                _gameOutputService.RoundCompleted(i + 1, simulationConfiguration.NumberOfRounds);
+                _sessionResults.AddRange(roundResults);
+
+                if (_shoeService.NeedsReshuffling())
+                {
+                    ReshuffleShoe();
+                }
+            }
+
+            ShowSessionResults();
+            _gameOutputService.GameOver();
+        }
+
+        private void ReshuffleShoe(bool simulationMode = false)
+        {
+            if (!simulationMode)
+            {
+                _gameOutputService.ReshuffleShoe();
+            }
             _shoeService.ShuffleCards();
             _cardCountingService.ResetCount();
         }

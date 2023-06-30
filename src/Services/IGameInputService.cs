@@ -8,5 +8,6 @@ namespace Blackjack.Services
         bool PlayAnotherRound();
         void PlayerBust();
         void PlayerBlackjack();
+        SimulationConfiguration? GetSimulationConfiguration();
     }
 }

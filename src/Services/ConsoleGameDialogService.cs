@@ -103,5 +103,42 @@ namespace Blackjack.Services
             _outputService.WriteLine("Blackjack! Press any key to continue.");
             _inputService.ReadInput();
         }
+
+        public SimulationConfiguration? GetSimulationConfiguration()
+        {
+            _outputService.WriteLine("Do you want to run in simulation mode? (Y/N)");
+            string input = _inputService.ReadInput();
+            if (input.Equals("Y", StringComparison.OrdinalIgnoreCase))
+            {
+                return new SimulationConfiguration()
+                {
+                    NumberOfRounds = GetNumberOfRounds(),
+                    NumberOfHands = GetNumberOfHands(),
+                    BetAmount = GetBetAmount()                   
+                };
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private int GetNumberOfRounds()
+        {
+            while (true)
+            {
+                _outputService.WriteLine($"Enter the number of rounds to play (Min: {_gameConfiguration.MinimumRounds} Max: {_gameConfiguration.MaximumRounds}):");
+                int numberOfRounds = _inputService.ReadIntegerInput();
+
+                if (numberOfRounds <= _gameConfiguration.MaximumRounds && numberOfRounds >= _gameConfiguration.MinimumRounds)
+                {
+                    return numberOfRounds;
+                }
+                else
+                {
+                    _outputService.WriteLine($"Invalid number of hands. Please enter a value between {_gameConfiguration.MinimumRounds} and {_gameConfiguration.MaximumRounds}.");
+                }
+            }
+        }
     }
 }
