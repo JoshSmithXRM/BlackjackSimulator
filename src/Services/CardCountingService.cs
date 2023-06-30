@@ -10,14 +10,11 @@ namespace Blackjack.Services
 
         public CardCountingService(ICountingSystemFactory countingSystemFactory, GameConfiguration gameConfiguration)
         {
-            CountingSystem configuredCountingSystem = gameConfiguration.CountingSystem;
+            var configuredCountingSystem = gameConfiguration.CountingSystem;
             _countingSystem = countingSystemFactory.CreateCountingSystem(configuredCountingSystem);
         }
 
-        public void ResetCount()
-        {
-            _countingSystem.ResetCount();
-        }
+        public void ResetCount() => _countingSystem.ResetCount();
 
         public Recommendation GetRecommendation(IHand playerHand, ICard dealerFirstCard)
         {
@@ -31,13 +28,10 @@ namespace Blackjack.Services
                 return new Recommendation(_countingSystem.RunningCount, _countingSystem.CountType, null);
             }
 
-            PlayerAction action = _countingSystem.GetRecommendation(playerHand, dealerFirstCard);
+            var action = _countingSystem.GetRecommendation(playerHand, dealerFirstCard);
             return new Recommendation(_countingSystem.RunningCount, _countingSystem.CountType, action);
         }
 
-        public void UpdateCount(ICard card)
-        {
-            _countingSystem.UpdateCount(card);
-        }
+        public void UpdateCount(ICard card) => _countingSystem.UpdateCount(card);
     }
 }

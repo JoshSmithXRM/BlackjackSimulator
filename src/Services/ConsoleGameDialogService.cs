@@ -18,12 +18,12 @@ namespace Blackjack.Services
             while (true)
             {
                 _outputService.WriteLine("Choose an action:");
-                for (int i = 0; i < availableActions.Count; i++)
+                for (var i = 0; i < availableActions.Count; i++)
                 {
                     _outputService.WriteLine($"{i + 1}. {availableActions[i]}");
                 }
 
-                int choice = _inputService.ReadIntegerInput();
+                var choice = _inputService.ReadIntegerInput();
 
                 if (choice >= 1 && choice <= availableActions.Count)
                 {
@@ -39,7 +39,7 @@ namespace Blackjack.Services
             while (true)
             {
                 _outputService.WriteLine($"Enter the number of hands to play (Min: {_gameConfiguration.MinimumHands} Max: {_gameConfiguration.MaximumHands}):");
-                int numberOfHands = _inputService.ReadIntegerInput();
+                var numberOfHands = _inputService.ReadIntegerInput();
 
                 if (numberOfHands <= _gameConfiguration.MaximumHands && numberOfHands >= _gameConfiguration.MinimumHands)
                 {
@@ -57,7 +57,7 @@ namespace Blackjack.Services
             while (true)
             {
                 _outputService.WriteLine($"Enter the bet amount for each hand (Min: {_gameConfiguration.MinimumBet} Max: {_gameConfiguration.MaximumBet}):");
-                decimal betAmount = _inputService.ReadDecimalInput();
+                var betAmount = _inputService.ReadDecimalInput();
 
                 if (betAmount <= _gameConfiguration.MaximumBet && betAmount >= _gameConfiguration.MinimumBet)
                 {
@@ -76,7 +76,7 @@ namespace Blackjack.Services
             {
                 _outputService.WriteLine();
                 _outputService.WriteLine("Play another round? (Y/N)");
-                string input = _inputService.ReadInput();
+                var input = _inputService.ReadInput();
 
                 if (input.Equals("Y", StringComparison.OrdinalIgnoreCase))
                 {
@@ -95,32 +95,27 @@ namespace Blackjack.Services
         public void PlayerBust()
         {
             _outputService.WriteLine("Bust! Press any key to continue.");
-            _inputService.ReadInput();
+            _ = _inputService.ReadInput();
         }
 
         public void PlayerBlackjack()
         {
             _outputService.WriteLine("Blackjack! Press any key to continue.");
-            _inputService.ReadInput();
+            _ = _inputService.ReadInput();
         }
 
         public SimulationConfiguration? GetSimulationConfiguration()
         {
             _outputService.WriteLine("Do you want to run in simulation mode? (Y/N)");
-            string input = _inputService.ReadInput();
-            if (input.Equals("Y", StringComparison.OrdinalIgnoreCase))
-            {
-                return new SimulationConfiguration()
+            var input = _inputService.ReadInput();
+            return input.Equals("Y", StringComparison.OrdinalIgnoreCase)
+                ? new SimulationConfiguration()
                 {
                     NumberOfRounds = GetNumberOfRounds(),
                     NumberOfHands = GetNumberOfHands(),
-                    BetAmount = GetBetAmount()                   
-                };
-            }
-            else
-            {
-                return null;
-            }
+                    BetAmount = GetBetAmount()
+                }
+                : null;
         }
 
         private int GetNumberOfRounds()
@@ -128,7 +123,7 @@ namespace Blackjack.Services
             while (true)
             {
                 _outputService.WriteLine($"Enter the number of rounds to play (Min: {_gameConfiguration.MinimumRounds} Max: {_gameConfiguration.MaximumRounds}):");
-                int numberOfRounds = _inputService.ReadIntegerInput();
+                var numberOfRounds = _inputService.ReadIntegerInput();
 
                 if (numberOfRounds <= _gameConfiguration.MaximumRounds && numberOfRounds >= _gameConfiguration.MinimumRounds)
                 {

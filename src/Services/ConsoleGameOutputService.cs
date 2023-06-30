@@ -1,5 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
-
 namespace Blackjack.Services
 {
     public class ConsoleGameOutputService : IGameOutputService
@@ -11,30 +9,15 @@ namespace Blackjack.Services
             _outputService = outputService;
         }
 
-        public void ClearOutput()
-        {
-            _outputService.Clear();
-        }
+        public void ClearOutput() => _outputService.Clear();
 
-        public void Recommendation(string recommendation)
-        {
-            _outputService.WriteLine($"Recommendation: {recommendation}");
-        }
+        public void Recommendation(string recommendation) => _outputService.WriteLine($"Recommendation: {recommendation}");
 
-        public void InvalidAction()
-        {
-            _outputService.WriteLine("Invalid input. Please try again.");
-        }
+        public void InvalidAction() => _outputService.WriteLine("Invalid input. Please try again.");
 
-        public void ReshuffleShoe()
-        {
-            _outputService.WriteLine("Reshuffling the shoe...");
-        }
+        public void ReshuffleShoe() => _outputService.WriteLine("Reshuffling the shoe...");
 
-        public void GameOver()
-        {
-            _outputService.WriteLine("=== Game Over ===");
-        }
+        public void GameOver() => _outputService.WriteLine("=== Game Over ===");
 
         public void Recommendation(Recommendation recommendation)
         {
@@ -112,19 +95,10 @@ namespace Blackjack.Services
             _outputService.WriteLine();
         }
 
-        public void ServiceMissing(string serviceName)
-        {
-            _outputService.WriteLine($"Failed to retrieve {serviceName} from the service provider.");
-        }
+        public void ServiceMissing(string serviceName) => _outputService.WriteLine($"Failed to retrieve {serviceName} from the service provider.");
 
-        public void SimulationStarted()
-        {
-            _outputService.WriteLine("Simulation started.");
-        }
+        public void SimulationStarted() => _outputService.WriteLine("Simulation started.");
 
-        public void RoundCompleted(int roundNumber, int totalRounds)
-        {
-            _outputService.WriteLine($"Round {roundNumber}/{totalRounds} completed.");
-        }
+        public void RoundCompleted(int roundNumber, int totalRounds) => _outputService.WriteLine($"Round {roundNumber}/{totalRounds} completed.");
     }
 }

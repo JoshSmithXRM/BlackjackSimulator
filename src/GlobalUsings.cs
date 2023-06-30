@@ -1,12 +1,8 @@
 global using System;
 global using System.Collections.Generic;
-global using System.IO;
 global using System.Linq;
-global using System.Net.Http;
-global using System.Threading;
-global using System.Threading.Tasks;
+global using Blackjack.CountingSystems;
 global using Blackjack.Enums;
 global using Blackjack.Models;
 global using Blackjack.Services;
-global using Blackjack.CountingSystems;
 global using Microsoft.Extensions.DependencyInjection;

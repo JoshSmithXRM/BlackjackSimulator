@@ -2,9 +2,7 @@ namespace Blackjack
 {
     public class Startup
     {
-        public static void ConfigureServices(IServiceCollection services, GameConfiguration gameConfiguration)
-        {
-            services
+        public static void ConfigureServices(IServiceCollection services, GameConfiguration gameConfiguration) => services
                 .AddSingleton(gameConfiguration)
                 .AddSingleton<IShoeService, ShoeService>()
                 .AddTransient<ICardCountingService, CardCountingService>()
@@ -18,6 +16,5 @@ namespace Blackjack
                 .AddTransient<IHandFactory, HandFactory>()
                 .AddTransient<IGameService, GameService>()
                 .AddTransient<IGameRound, GameRound>();
-        }
     }
 }

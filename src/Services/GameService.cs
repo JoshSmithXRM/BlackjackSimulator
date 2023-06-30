@@ -27,13 +27,13 @@ namespace Blackjack.Services
         public void PlayGame()
         {
             _gameOutputService.ClearOutput();
-            
+
             while (true)
             {
-                int numberOfPlayerHands = _gameInputService.GetNumberOfHands();
-                decimal betAmount = _gameInputService.GetBetAmount();
+                var numberOfPlayerHands = _gameInputService.GetNumberOfHands();
+                var betAmount = _gameInputService.GetBetAmount();
 
-                List<HandResult> roundResults = _gameRound.Play(numberOfPlayerHands, betAmount);
+                var roundResults = _gameRound.Play(numberOfPlayerHands, betAmount);
                 _sessionResults.AddRange(roundResults);
                 ShowRoundResults(roundResults);
 
@@ -58,9 +58,9 @@ namespace Blackjack.Services
             _gameOutputService.ClearOutput();
             _gameOutputService.SimulationStarted();
 
-            for (int i = 0; i < simulationConfiguration.NumberOfRounds; i++)
+            for (var i = 0; i < simulationConfiguration.NumberOfRounds; i++)
             {
-                List<HandResult> roundResults = _gameRound.Play(simulationConfiguration.NumberOfHands, simulationConfiguration.BetAmount, true);
+                var roundResults = _gameRound.Play(simulationConfiguration.NumberOfHands, simulationConfiguration.BetAmount, true);
                 _gameOutputService.RoundCompleted(i + 1, simulationConfiguration.NumberOfRounds);
                 _sessionResults.AddRange(roundResults);
 

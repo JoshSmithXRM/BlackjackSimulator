@@ -7,34 +7,14 @@ namespace Blackjack.CountingSystems
 
         public CountType CountType => GetCountType(_runningCount);
 
-        public void ResetCount()
-        {
-            _runningCount = 0;
-        }
+        public void ResetCount() => _runningCount = 0;
 
         public abstract PlayerAction GetRecommendation(IHand playerHand, ICard dealerFirstCard);
 
-        public void UpdateCount(ICard card)
-        {
-            _runningCount += GetCardValue(card);
-        }
+        public void UpdateCount(ICard card) => _runningCount += GetCardValue(card);
 
         protected abstract int GetCardValue(ICard card);
 
-        private static CountType GetCountType(int runningCount)
-        {
-            if (runningCount >= 1)
-            {
-                return CountType.Positive;
-            }
-            else if (runningCount <= -1)
-            {
-                return CountType.Negative;
-            }
-            else
-            {
-                return CountType.Neutral;
-            }
-        }
+        private static CountType GetCountType(int runningCount) => runningCount >= 1 ? CountType.Positive : runningCount <= -1 ? CountType.Negative : CountType.Neutral;
     }
 }

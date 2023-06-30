@@ -4,8 +4,8 @@ namespace Blackjack.Services
     {
         public HandResult EvaluateHand(IHand playerHand, IHand dealerHand)
         {
-            bool playerWins = !playerHand.IsBust && (dealerHand.IsBust || playerHand.GetTotal() > dealerHand.GetTotal());
-            bool tie = !playerHand.IsBust && playerHand.GetTotal() == dealerHand.GetTotal();
+            var playerWins = !playerHand.IsBust && (dealerHand.IsBust || playerHand.GetTotal() > dealerHand.GetTotal());
+            var tie = !playerHand.IsBust && playerHand.GetTotal() == dealerHand.GetTotal();
 
             HandOutcome outcome;
             decimal netAmountWonLost;

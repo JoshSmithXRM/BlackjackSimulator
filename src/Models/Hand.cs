@@ -7,10 +7,7 @@ namespace Blackjack.Models
 
         public IReadOnlyList<ICard> Cards => cards;
 
-        public void AddCard(ICard card)
-        {
-            cards.Add(card);
-        }
+        public void AddCard(ICard card) => cards.Add(card);
 
         public int GetTotal()
         {
@@ -49,48 +46,17 @@ namespace Blackjack.Models
             ActionsTaken = new List<PlayerAction>();
         }
 
-        public override string ToString()
-        {
-            return string.Join(", ", cards);
-        }
+        public override string ToString() => string.Join(", ", cards);
 
-        public string PartialString(bool hideSecondCard = false)
-        {
-            if (cards.Count > 1)
-            {
-                if (hideSecondCard)
-                {
-                    return $"{cards.First()}, *";
-                }
-                else
-                {
-                    return string.Join(", ", cards);
-                }
-            }
-            else if (cards.Count == 1)
-            {
-                return $"{cards.First()}";
-            }
-            else
-            {
-                return "No cards";
-            }
-        }
+        public string PartialString(bool hideSecondCard = false) => cards.Count > 1
+                ? hideSecondCard ? $"{cards.First()}, *" : string.Join(", ", cards)
+                : cards.Count == 1 ? $"{cards.First()}" : "No cards";
 
-        public void Clear()
-        {
-            cards.Clear();
-        }
+        public void Clear() => cards.Clear();
 
-        public ICard GetUpCard()
-        {
-            return cards[0];
-        }
+        public ICard GetUpCard() => cards[0];
 
-        public ICard GetDownCard()
-        {
-            return cards[1];
-        }
+        public ICard GetDownCard() => cards[1];
 
         public IHand Split()
         {

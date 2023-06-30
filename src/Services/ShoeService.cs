@@ -30,7 +30,7 @@ namespace Blackjack.Services
         {
             _cards.Clear(); // Clear the cards list before re-initializing
 
-            for (int i = 0; i < _gameConfiguration.DecksInShoe; i++)
+            for (var i = 0; i < _gameConfiguration.DecksInShoe; i++)
             {
                 foreach (Suit suit in Enum.GetValues(typeof(Suit)))
                 {
@@ -59,14 +59,7 @@ namespace Blackjack.Services
         public bool NeedsReshuffling()
         {
             var penetrationRate = (double)_currentIndex / _cards.Count;
-            if (penetrationRate >= _gameConfiguration.PenetrationRateRange.Min && penetrationRate <= _gameConfiguration.PenetrationRateRange.Max)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return penetrationRate >= _gameConfiguration.PenetrationRateRange.Min && penetrationRate <= _gameConfiguration.PenetrationRateRange.Max;
         }
     }
 }

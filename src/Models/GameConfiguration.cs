@@ -7,7 +7,7 @@ namespace Blackjack.Models
         public decimal MaximumBet { get; set; } = 500;
         public int MinimumHands { get; set; } = 1;
         public int MaximumHands { get; set; } = 7;
-        public int MinimumRounds {get; set; } = 1;
+        public int MinimumRounds { get; set; } = 1;
         public int MaximumRounds { get; set; } = 1000000;
         public (double Min, double Max) PenetrationRateRange { get; set; } = (0.5, 0.75);
         public Strategy Strategy { get; set; } = Strategy.Basic;

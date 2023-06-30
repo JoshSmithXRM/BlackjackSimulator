@@ -9,39 +9,18 @@ namespace Blackjack.Services
             _gameDialogService = gameDialogService;
         }
 
-        public int GetNumberOfHands()
-        {
-            return _gameDialogService.GetNumberOfHands();
-        }
+        public int GetNumberOfHands() => _gameDialogService.GetNumberOfHands();
 
-        public PlayerAction GetPlayerAction(List<PlayerAction> availableActions)
-        {
-            return _gameDialogService.GetPlayerAction(availableActions);
-        }
+        public PlayerAction GetPlayerAction(List<PlayerAction> availableActions) => _gameDialogService.GetPlayerAction(availableActions);
 
-        public decimal GetBetAmount()
-        {
-            return _gameDialogService.GetBetAmount();
-        }
+        public decimal GetBetAmount() => _gameDialogService.GetBetAmount();
 
-        public bool PlayAnotherRound()
-        {
-            return _gameDialogService.PlayAnotherRound();
-        }
+        public bool PlayAnotherRound() => _gameDialogService.PlayAnotherRound();
 
-        public void PlayerBust()
-        {
-            _gameDialogService.PlayerBust();
-        }
+        public void PlayerBust() => _gameDialogService.PlayerBust();
 
-        public void PlayerBlackjack()
-        {
-            _gameDialogService.PlayerBlackjack();
-        }
+        public void PlayerBlackjack() => _gameDialogService.PlayerBlackjack();
 
-        public SimulationConfiguration? GetSimulationConfiguration()
-        {
-            return _gameDialogService.GetSimulationConfiguration();
-        }
+        public SimulationConfiguration? GetSimulationConfiguration() => _gameDialogService.GetSimulationConfiguration();
     }
 }

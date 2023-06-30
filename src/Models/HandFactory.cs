@@ -2,12 +2,9 @@ namespace Blackjack.Models
 {
     public class HandFactory : IHandFactory
     {
-        public IHand CreateHand(decimal betAmount = 0)
+        public IHand CreateHand(decimal betAmount = 0) => new Hand(this)
         {
-            return new Hand(this)
-            {
-                BetAmount = betAmount
-            };
-        }
+            BetAmount = betAmount
+        };
     }
 }

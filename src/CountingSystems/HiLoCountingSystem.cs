@@ -26,61 +26,37 @@ namespace Blackjack.CountingSystems
             }
             else if (playerHand.GetTotal() == 16)
             {
-                if ((dealerFirstCard.Rank >= Rank.Nine && dealerFirstCard.Rank <= Rank.Ten || dealerFirstCard.Rank == Rank.Ace) && _runningCount >= 0)
-                {
-                    return PlayerAction.Surrender;
-                }
-                else if (dealerFirstCard.Rank >= Rank.Two && dealerFirstCard.Rank <= Rank.Six && _runningCount >= 1)
-                {
-                    return PlayerAction.Stand;
-                }
-                else
-                {
-                    return PlayerAction.Hit;
-                }
+                return ((dealerFirstCard.Rank >= Rank.Nine && dealerFirstCard.Rank <= Rank.Ten) || dealerFirstCard.Rank == Rank.Ace) && _runningCount >= 0
+                    ? PlayerAction.Surrender
+                    : dealerFirstCard.Rank >= Rank.Two && dealerFirstCard.Rank <= Rank.Six && _runningCount >= 1
+                        ? PlayerAction.Stand
+                        : PlayerAction.Hit;
             }
             else if (playerHand.GetTotal() == 15)
             {
-                if (dealerFirstCard.Rank == Rank.Ten && _runningCount >= -1)
-                {
-                    return PlayerAction.Surrender;
-                }
-                else if (dealerFirstCard.Rank >= Rank.Two && dealerFirstCard.Rank <= Rank.Six && _runningCount >= 1)
-                {
-                    return PlayerAction.Stand;
-                }
-                else
-                {
-                    return PlayerAction.Hit;
-                }
+                return dealerFirstCard.Rank == Rank.Ten && _runningCount >= -1
+                    ? PlayerAction.Surrender
+                    : dealerFirstCard.Rank >= Rank.Two && dealerFirstCard.Rank <= Rank.Six && _runningCount >= 1
+                        ? PlayerAction.Stand
+                        : PlayerAction.Hit;
             }
-            else if (playerHand.GetTotal() == 13 || playerHand.GetTotal() == 14)
+            else if (playerHand.GetTotal() is 13 or 14)
             {
-                if (playerHand.GetTotal() == 14 && dealerFirstCard.Rank == Rank.Ten && _runningCount >= -1)
-                {
-                    return PlayerAction.Surrender;
-                }
-                else if (dealerFirstCard.Rank >= Rank.Two && dealerFirstCard.Rank <= Rank.Six && _runningCount >= 1)
-                {
-                    return PlayerAction.Stand;
-                }
-                else
-                {
-                    return PlayerAction.Hit;
-                }
+                return playerHand.GetTotal() == 14 && dealerFirstCard.Rank == Rank.Ten && _runningCount >= -1
+                    ? PlayerAction.Surrender
+                    : dealerFirstCard.Rank >= Rank.Two && dealerFirstCard.Rank <= Rank.Six && _runningCount >= 1
+                        ? PlayerAction.Stand
+                        : PlayerAction.Hit;
             }
 
             return PlayerAction.Hit;
         }
 
-        protected override int GetCardValue(ICard card)
+        protected override int GetCardValue(ICard card) => card.Rank switch
         {
-            return card.Rank switch
-            {
-                Rank.Two or Rank.Three or Rank.Four or Rank.Five or Rank.Six => 1,
-                Rank.Ten or Rank.Jack or Rank.Queen or Rank.King or Rank.Ace => -1,
-                _ => 0,
-            };
-        }
+            Rank.Two or Rank.Three or Rank.Four or Rank.Five or Rank.Six => 1,
+            Rank.Ten or Rank.Jack or Rank.Queen or Rank.King or Rank.Ace => -1,
+            _ => 0,
+        };
     }
 }

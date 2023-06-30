@@ -12,7 +12,7 @@ namespace Blackjack.Services
                 {
                     return -1;
                 }
-                if (decimal.TryParse(input, out decimal value))
+                if (decimal.TryParse(input, out var value))
                 {
                     return value;
                 }
@@ -22,11 +22,7 @@ namespace Blackjack.Services
         public string ReadInput()
         {
             var input = Console.ReadLine();
-            if (input == null)
-            {
-                return string.Empty;
-            }
-            return input;
+            return input ?? string.Empty;
         }
 
         public int ReadIntegerInput()
@@ -38,7 +34,7 @@ namespace Blackjack.Services
                 {
                     return -1;
                 }
-                if (int.TryParse(input, out int value))
+                if (int.TryParse(input, out var value))
                 {
                     return value;
                 }
