@@ -1,4 +1,4 @@
-namespace Blackjack.Models
+namespace Blackjack.Configuration
 {
     public class SimulationConfiguration
     {

@@ -5,4 +5,5 @@ global using Blackjack.CountingSystems;
 global using Blackjack.Enums;
 global using Blackjack.Models;
 global using Blackjack.Services;
+global using Blackjack.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
