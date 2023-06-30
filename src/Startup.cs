@@ -6,8 +6,6 @@ namespace Blackjack
         {
             services
                 .AddSingleton(gameConfiguration)
-                .AddTransient<IHand, Hand>()
-                .AddTransient<ICard, Card>()
                 .AddTransient<IShoeService, ShoeService>()
                 .AddTransient<ICardCountingService, CardCountingService>()
                 .AddTransient<ICountingSystemFactory, CountingSystemFactory>()
@@ -16,8 +14,10 @@ namespace Blackjack
                 .AddTransient<IGameOutputService, ConsoleGameOutputService>()
                 .AddTransient<IGameInputService, ConsoleGameInputService>()
                 .AddTransient<IGameDialogService, ConsoleGameDialogService>()
-                .AddTransient<IHandEvaluator, SimpleHandEvaluator>()
-                .AddTransient<GameService>();
+                .AddTransient<IHandEvaluator, HandEvaluator>()
+                .AddTransient<IHandFactory, HandFactory>()
+                .AddTransient<IGameService, GameService>()
+                .AddTransient<IGameRound, GameRound>();
         }
     }
 }

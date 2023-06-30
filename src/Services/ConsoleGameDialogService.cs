@@ -4,11 +4,13 @@ namespace Blackjack.Services
     {
         private readonly IOutputService _outputService;
         private readonly IInputService _inputService;
+        private readonly GameConfiguration _gameConfiguration;
 
-        public ConsoleGameDialogService(IOutputService outputService, IInputService inputService)
+        public ConsoleGameDialogService(IOutputService outputService, IInputService inputService, GameConfiguration gameConfiguration)
         {
             _outputService = outputService;
             _inputService = inputService;
+            _gameConfiguration = gameConfiguration;
         }
 
         public PlayerAction GetPlayerAction(List<PlayerAction> availableActions)
@@ -36,15 +38,17 @@ namespace Blackjack.Services
         {
             while (true)
             {
-                _outputService.WriteLine("Enter the number of hands to play:");
+                _outputService.WriteLine($"Enter the number of hands to play (Min: {_gameConfiguration.MinimumHands} Max: {_gameConfiguration.MaximumHands}):");
                 int numberOfHands = _inputService.ReadIntegerInput();
 
-                if (numberOfHands > 0)
+                if (numberOfHands <= _gameConfiguration.MaximumHands && numberOfHands >= _gameConfiguration.MinimumHands)
                 {
                     return numberOfHands;
                 }
-
-                _outputService.WriteLine("Invalid input. Please try again.");
+                else
+                {
+                    _outputService.WriteLine($"Invalid number of hands. Please enter a value between {_gameConfiguration.MinimumHands} and {_gameConfiguration.MaximumHands}.");
+                }
             }
         }
 
@@ -52,15 +56,17 @@ namespace Blackjack.Services
         {
             while (true)
             {
-                _outputService.WriteLine("Enter the wager amount for each hand:");
-                decimal wagerAmount = _inputService.ReadDecimalInput();
+                _outputService.WriteLine($"Enter the bet amount for each hand (Min: {_gameConfiguration.MinimumBet} Max: {_gameConfiguration.MaximumBet}):");
+                decimal betAmount = _inputService.ReadDecimalInput();
 
-                if (wagerAmount > 0)
+                if (betAmount <= _gameConfiguration.MaximumBet && betAmount >= _gameConfiguration.MinimumBet)
                 {
-                    return wagerAmount;
+                    return betAmount;
                 }
-
-                _outputService.WriteLine("Invalid input. Please try again.");
+                else
+                {
+                    _outputService.WriteLine($"Invalid bet amount. Please enter a value between {_gameConfiguration.MinimumBet} and {_gameConfiguration.MaximumBet}.");
+                }
             }
         }
 

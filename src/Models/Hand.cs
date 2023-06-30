@@ -3,6 +3,7 @@ namespace Blackjack.Models
     public class Hand : IHand
     {
         private readonly List<ICard> cards = new();
+        private readonly IHandFactory _handFactory;
 
         public IReadOnlyList<ICard> Cards => cards;
 
@@ -40,9 +41,11 @@ namespace Blackjack.Models
 
         public List<PlayerAction> ActionsTaken { get; }
 
-        public Hand(decimal betAmount = 0)
+        public bool CanSurrender => cards.Count == 2 && !IsBlackjack;
+
+        public Hand(IHandFactory handFactory)
         {
-            BetAmount = betAmount;
+            _handFactory = handFactory;
             ActionsTaken = new List<PlayerAction>();
         }
 
@@ -81,12 +84,17 @@ namespace Blackjack.Models
 
         public ICard GetUpCard()
         {
-            return cards.First();
+            return cards[0];
+        }
+
+        public ICard GetDownCard()
+        {
+            return cards[1];
         }
 
         public IHand Split()
         {
-            var splitHand = new Hand(BetAmount);
+            var splitHand = _handFactory.CreateHand(BetAmount);
             splitHand.AddCard(cards[1]);
             cards.RemoveAt(1);
             return splitHand;

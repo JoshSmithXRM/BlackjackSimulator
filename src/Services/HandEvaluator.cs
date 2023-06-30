@@ -1,6 +1,6 @@
 namespace Blackjack.Services
 {
-    public class SimpleHandEvaluator : IHandEvaluator
+    public class HandEvaluator : IHandEvaluator
     {
         public HandResult EvaluateHand(IHand playerHand, IHand dealerHand)
         {
@@ -9,11 +9,20 @@ namespace Blackjack.Services
 
             HandOutcome outcome;
             decimal netAmountWonLost;
-
             if (playerHand.IsBust)
             {
                 outcome = HandOutcome.Loss;
                 netAmountWonLost = -playerHand.BetAmount;
+            }
+            else if (playerHand.ActionsTaken.Any() && playerHand.ActionsTaken.Last() == PlayerAction.Surrender)
+            {
+                outcome = HandOutcome.Surrender;
+                netAmountWonLost = -playerHand.BetAmount / 2;
+            }
+            else if (playerHand.IsBlackjack)
+            {
+                outcome = HandOutcome.Blackjack;
+                netAmountWonLost = playerHand.BetAmount * 1.5m;
             }
             else if (playerWins)
             {

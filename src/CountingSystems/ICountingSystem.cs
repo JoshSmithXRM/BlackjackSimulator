@@ -6,5 +6,6 @@ namespace Blackjack.CountingSystems
         CountType CountType { get; }
         void ResetCount();
         PlayerAction GetRecommendation(IHand playerHand, ICard dealerFirstCard);
+        abstract void UpdateCount(ICard card);
     }
 }

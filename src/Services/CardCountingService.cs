@@ -34,5 +34,10 @@ namespace Blackjack.Services
             PlayerAction action = _countingSystem.GetRecommendation(playerHand, dealerFirstCard);
             return new Recommendation(_countingSystem.RunningCount, _countingSystem.CountType, action);
         }
+
+        public void UpdateCount(ICard card)
+        {
+            _countingSystem.UpdateCount(card);
+        }
     }
 }

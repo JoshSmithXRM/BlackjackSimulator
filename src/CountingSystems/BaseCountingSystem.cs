@@ -14,7 +14,7 @@ namespace Blackjack.CountingSystems
 
         public abstract PlayerAction GetRecommendation(IHand playerHand, ICard dealerFirstCard);
 
-        protected void UpdateCount(ICard card)
+        public void UpdateCount(ICard card)
         {
             _runningCount += GetCardValue(card);
         }

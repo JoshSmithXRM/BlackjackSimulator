@@ -5,6 +5,7 @@ namespace Blackjack.Enums
         Win,
         Loss,
         Push,
+        Surrender,
         Blackjack
     }
 }

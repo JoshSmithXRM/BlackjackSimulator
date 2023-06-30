@@ -51,8 +51,8 @@ namespace Blackjack.Services
             {
                 _outputService.WriteLine($"Hand # {results.IndexOf(result) + 1}/{results.Count}");
                 _outputService.WriteLine($"Outcome: {result.Outcome}");
-                _outputService.WriteLine($"Player's Hand: {result.PlayerHand.PartialString()}");
-                _outputService.WriteLine($"Dealer's Hand: {result.DealerHand.PartialString()}");
+                _outputService.WriteLine($"Player's Hand: {result.PlayerHand.PartialString()} ({result.PlayerHand.GetTotal()})");
+                _outputService.WriteLine($"Dealer's Hand: {result.DealerHand.PartialString()} ({result.DealerHand.GetTotal()})");
                 _outputService.WriteLine($"Bet Amount: {result.BetAmount}");
                 _outputService.WriteLine($"Net Amount Won/Lost: {result.NetAmountWonLost}");
                 _outputService.WriteLine($"Player Actions: {string.Join(", ", result.PlayerActions)}");
@@ -64,6 +64,7 @@ namespace Blackjack.Services
             _outputService.WriteLine($"Wins: {results.Count(x => x.Outcome == HandOutcome.Win)} ");
             _outputService.WriteLine($"Losses: {results.Count(x => x.Outcome == HandOutcome.Loss)}");
             _outputService.WriteLine($"Pushes: {results.Count(x => x.Outcome == HandOutcome.Push)}");
+            _outputService.WriteLine($"Surrenders: {results.Count(x => x.Outcome == HandOutcome.Surrender)}");
             _outputService.WriteLine("==================");
         }
 
